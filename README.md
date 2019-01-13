@@ -4,4 +4,4 @@ this has an extra token layer of authentication.
 
 set API_KEY in env variable to set the API Token.
 
-ther server will also run on port 80.
+set APP_PORT in env to set the port the app will run on.

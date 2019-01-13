@@ -12,7 +12,7 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const adapter = new FileAsync('db.json');
 let db;
 
-let APIKey;
+let APIKey, APP_PORT;
 
 if (process.env.API_KEY) {
     console.log("using api key from env");
@@ -21,6 +21,15 @@ if (process.env.API_KEY) {
 else {
     console.log("using api key from file");
     APIKey = fs.readFileSync("api_key.txt", "utf8");
+}
+
+if (process.env.APP_PORT) {
+    console.log("using port key from env");
+    APP_PORT = process.env.APP_PORT;
+}
+else {
+    console.log("using api key from file");
+    APP_PORT = 80
 }
 
 
@@ -149,7 +158,7 @@ async function init() {
     console.log('Express started on port 80');
 
     app.use('/shoppingList', shoppingList);
-    app.listen(80);
+    app.listen(APP_PORT);
 }
 
 
