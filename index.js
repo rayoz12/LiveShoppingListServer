@@ -28,7 +28,7 @@ if (process.env.APP_PORT) {
     APP_PORT = process.env.APP_PORT;
 }
 else {
-    console.log("using api key from file");
+    console.log("using port key from file");
     APP_PORT = 80
 }
 
@@ -155,10 +155,12 @@ async function init() {
         res.send({success: 1, item});
     });
 
-    console.log('Express started on port 80');
+    
 
     app.use('/shoppingList', shoppingList);
-    app.listen(APP_PORT);
+    app.listen(APP_PORT, () => {
+        console.log('Express started on port ' + APP_PORT);
+    });
 }
 
 
