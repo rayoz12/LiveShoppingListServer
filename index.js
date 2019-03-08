@@ -70,10 +70,13 @@ async function init() {
 	});
 	
 	shoppingList.use(function(req, res, next) {
-	  if (req.headers.authorization != APIKey) {
-		return res.status(403).json({ error: 'No credentials sent!' });
-	  }
-	  next();
+        if (!req.headers.authorization) {
+            return res.status(403).json({ error: 'No credentials sent!' });
+        }
+        else if (req.headers.authorization != APIKey) {
+            return res.status(403).json({ error: 'Wrong Credentials' });
+        }
+        next();
 	});
 
     shoppingList.get('/', (req, res) => {
@@ -159,9 +162,9 @@ async function init() {
         res.send({success: 1, item});
     });
 
-    
-
     app.use('/shoppingList', shoppingList);
+    app.use(shoppingList);
+
     app.listen(APP_PORT, () => {
         console.log('Express started on port ' + APP_PORT);
     });
