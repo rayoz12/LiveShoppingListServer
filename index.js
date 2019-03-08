@@ -23,8 +23,12 @@ else {
     APIKey = fs.readFileSync("api_key.txt", "utf8");
 }
 
-if (process.env.APP_PORT) {
-    console.log("using port key from env");
+if (process.env.PORT) {
+    console.log("using PORT key from env");
+    APP_PORT = process.env.PORT;
+}
+else if (process.env.APP_PORT) {
+    console.log("using APP_PORT key from env");
     APP_PORT = process.env.APP_PORT;
 }
 else {
