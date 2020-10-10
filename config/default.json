@@ -1,0 +1,8 @@
+{
+    "env": "dev",
+    "envFile": "./env/prod.env",
+    "database": {
+        "path": "./shoppinglist.sqlite",
+        "synchronize": true
+    }
+}

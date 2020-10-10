@@ -1,0 +1,9 @@
+{
+    "env": "production",
+    "envFile":  "./env/prod.env",
+    "database": {
+        "path": "./shoppinglist.sqlite",
+        "synchronize": false
+    }
+
+}
