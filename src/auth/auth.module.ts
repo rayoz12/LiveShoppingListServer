@@ -7,8 +7,19 @@ import { LocalStrategy } from "./local.strategy";
 import { AuthController } from "./auth.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.strategy";
-console.log("JWT", process.env.NODE_ENV);
-console.log("JWT", process.env.JWTSecret);
+import { get } from "config";
+
+let expiresIn: string = "";
+if (get<boolean>("isDev")) {
+    console.log("NODE_ENV", process.env.NODE_ENV);
+    console.log("JWT", process.env.JWTSecret);
+
+    //Set expires in
+    expiresIn = "30d"
+}
+else {
+    expiresIn = "30m";
+}
 
 const jwtSecret = process.env.JWTSecret;
 if (jwtSecret === undefined) {
@@ -22,7 +33,7 @@ if (jwtSecret === undefined) {
         PassportModule,
         JwtModule.register({
             secret: process.env.JWTSecret, // TODO: Move to a secure location
-            signOptions: { expiresIn: "30m" }
+            signOptions: { expiresIn }
         })
     ],
     providers: [AuthService, LocalStrategy, JwtStrategy],

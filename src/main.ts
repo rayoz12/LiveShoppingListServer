@@ -2,14 +2,33 @@ if (process.env.NODE_ENV == "dev") {
     console.log("Running in Dev Mode");
     require("dotenv").config({ path: "./env/dev.env" });
 } else {
+    console.log("Running in Production Mode");
     require("dotenv").config({ path: "./env/prod.env" });
 }
+
+const ascii = [
+"    __    _               _____ __                      _                ___      __ ", 
+"   / /   (_)   _____     / ___// /_  ____  ____  ____  (_)___  ____ _   / (_)____/ /_", 
+"  / /   / / | / / _ \\    \\__ \\/ __ \\/ __ \\/ __ \\/ __ \\/ / __ \\/ __ `/  / / / ___/ __/", 
+" / /___/ /| |/ /  __/   ___/ / / / / /_/ / /_/ / /_/ / / / / / /_/ /  / / (__  ) /_  ", 
+"/_____/_/ |___/\\___/   /____/_/ /_/\\____/ .___/ .___/_/_/ /_/\\__, /  /_/_/____/\\__/  ", 
+"                                       /_/   /_/            /____/                   "
+]
+setTimeout(() =>{
+    console.log(ascii.join("\n"));
+    console.log(`v2.0.0 - 2020/10/11 - Initial Release - Black Star Pastry`);
+}, 3000);
 
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, Logger } from "@nestjs/common";
+import { get } from "config";
+
+let port = get<number>("port");
+
+
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -23,7 +42,8 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup("api", app, document);
-
-    await app.listen(3000);
+    
+    Logger.log(`Live Shopping List Starting Port ${port}`, "Live Shopping List");
+    await app.listen(port);
 }
 bootstrap();

@@ -1,6 +1,8 @@
 {
     "env": "dev",
-    "envFile": "./env/prod.env",
+    "isDev": true,
+    "envFile": "./env/dev.env",
+    "port": 3000,
     "database": {
         "path": "./shoppinglist.sqlite",
         "synchronize": true
