@@ -2,7 +2,7 @@
     "env": "production",
     "isDev": false,
     "envFile": "./env/prod.env",
-    "port": 80,
+    "port": 8080,
     "database": {
         "path": "./shoppinglist.sqlite",
         "synchronize": false
