@@ -27,7 +27,12 @@ import { ValidationPipe, Logger } from "@nestjs/common";
 import { get } from "config";
 
 let port = get<number>("port");
-
+const isDev = get<boolean>("isDev");
+// Check if we're running on prod and heroku to read the port from the env
+// ON_HEROKU is a env variable set as part as the app settings. not part of heroku itself
+if (!isDev && process.env.ON_HEROKU) {
+    port = +process.env.PORT;
+}
 
 
 async function bootstrap() {
