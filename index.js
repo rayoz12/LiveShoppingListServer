@@ -71,9 +71,11 @@ async function init() {
 	
 	shoppingList.use(function(req, res, next) {
         if (!req.headers.authorization) {
+            console.error("Authorization Error from:", req.ip);
             return res.status(403).json({ error: 'No credentials sent!' });
         }
         else if (req.headers.authorization != APIKey) {
+            console.error("Authorization Error from:", req.ip);
             return res.status(403).json({ error: 'Wrong Credentials' });
         }
         next();
