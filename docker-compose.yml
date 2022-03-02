@@ -1,0 +1,12 @@
+version: "3"
+services:
+  web:
+    build: .
+    environment:
+      - API_KEY=APIKEY
+    ports:
+      - "80:8002"
+    volumes:
+      - ./db.json:/usr/src/app/db.json
+      - ./LiveShoppingList.apk:/usr/src/app/LiveShoppingList.apk
+
