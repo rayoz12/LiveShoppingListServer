@@ -1,3 +1,5 @@
 api_key.txt
 api_key.txt*
 db.json
+node_modules
+public/build

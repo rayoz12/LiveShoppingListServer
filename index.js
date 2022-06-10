@@ -2,6 +2,7 @@ const fs = require("fs");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 
 app.use(bodyParser.json());
@@ -41,12 +42,13 @@ console.log("API Key:", APIKey);
 
 
 class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "") {
+    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none") {
         this.item = item;
         this.quantity = quantity
         this.bought = bought;
         this.added_by = added_by;
         this.comments = comments;
+        this.group = group;
     }
 }
 
@@ -67,6 +69,10 @@ async function init() {
 	
 	shoppingList.get('/GetApp', (req, res) => {
 		res.sendFile('./LiveShoppingList.apk', {root: __dirname});
+	});
+
+    shoppingList.get('/web', (req, res) => {
+		res.sendFile('./public/index.html', {root: __dirname});
 	});
 	
 	shoppingList.use(function(req, res, next) {
@@ -164,6 +170,7 @@ async function init() {
         res.send({success: 1, item});
     });
 
+    app.use(cors());
     app.use('/shoppingList', shoppingList);
     app.use(shoppingList);
 

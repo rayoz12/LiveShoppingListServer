@@ -1,3 +1,15 @@
+# Multi stage build for building svelte
+
+# 1. Build svelte
+FROM node as web_builder
+
+WORKDIR /web
+
+COPY web .
+
+RUN npm install && rm -rf ./public/build && npm run build
+
+# 2. Server
 FROM node:alpine
 
 # Create app directory
@@ -14,6 +26,8 @@ RUN npm install
 
 # Bundle app source
 COPY . .
+
+COPY --from=web_builder /web/public .
 
 EXPOSE 80
 CMD [ "node", "index.js" ]
