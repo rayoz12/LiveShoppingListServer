@@ -72,8 +72,13 @@ async function init() {
 	});
 
     shoppingList.get('/web', (req, res) => {
+        if (!req.path.endsWith("/")) {
+            return res.redirect("/web/");
+        }
 		res.sendFile('./public/index.html', {root: __dirname});
 	});
+
+    shoppingList.use("/web", express.static('public'));
 	
 	shoppingList.use(function(req, res, next) {
         if (!req.headers.authorization) {
