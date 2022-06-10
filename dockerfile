@@ -27,7 +27,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-COPY --from=web_builder /web/public .
+COPY --from=web_builder /web/public ./public
 
 EXPOSE 80
 CMD [ "node", "index.js" ]
