@@ -42,19 +42,16 @@ console.log("API Key:", APIKey);
 
 
 class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none") {
+    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", isPrivate = false) {
         this.item = item;
         this.quantity = quantity
         this.bought = bought;
         this.added_by = added_by;
         this.comments = comments;
         this.group = group;
+        this.isPrivate = isPrivate;
     }
 }
-
-const item = JSON.parse(JSON.stringify(new Item()));
-
-//obj item structure = { item: "", bought: false, added_by: "", comments: "" }
 
 async function init() {
     db = await low(adapter);
@@ -94,16 +91,39 @@ async function init() {
 
     shoppingList.get('/', (req, res) => {
         //res.json(dn)
-        res.json(db.get('items').value());
+        let items = db.get('items').value();
+
+        const user = req.headers["x-user"];
+        console.log(req.headers);
+        if (user) {
+            // get the user's private items
+            items = items.filter(it => !it.isPrivate || it.added_by === user);
+        }
+        else {
+            // get the public (!isPrivate) items
+            items = items.filter(it => !it.isPrivate);
+        }
+
+        res.json(items);
     });
 
     // GET /items/:id
     shoppingList.get('/:id', (req, res) => {
         const item = db.get('items')
         .find({ id: req.params.id })
-        .value()
-    
-        res.send(item)
+        .value();
+
+        const user = req.headers["x-user"];
+        if (item.isPrivate) {
+            if (user === item.added_by) {
+                return res.json(item);
+            }
+            else {
+                return res.status(404).json(item);
+            }
+        }
+
+        return res.json(item);
     });
 
     shoppingList.post('/add', async (req, res) => {

@@ -2,11 +2,41 @@
   "items": [
     {
       "added_by": "Ryan",
-      "bought": true,
+      "bought": false,
       "comments": "We need milk for tea and breakfast",
       "item": "Milk",
       "quantity": 5,
+      "isPrivate": false,
       "id": "1533468332811"
+    },
+    {
+      "added_by": "Ryan",
+      "bought": false,
+      "comments": "We need milk for tea and breakfast",
+      "item": "tea bags",
+      "quantity": 5,
+      "isPrivate": false,
+      "id": "1653913447437"
+    },
+    {
+      "item": "Yaris GR",
+      "quantity": 1,
+      "bought": false,
+      "added_by": "Ryan",
+      "comments": "",
+      "group": "Cars",
+      "isPrivate": true,
+      "id": "1672823609365"
+    },
+    {
+      "item": "Kia Stinger",
+      "quantity": 1,
+      "bought": false,
+      "added_by": "Ryan",
+      "comments": "",
+      "group": "Cars",
+      "isPrivate": true,
+      "id": "1672823626791"
     }
   ]
 }

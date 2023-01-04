@@ -50,7 +50,7 @@
 		const update = event.detail;
 		name = update.name;
 		localStorage.setItem("listName", name);
-		setConfig(update.key);
+		setConfig(update.key, name);
 		refresh();
 	}
 

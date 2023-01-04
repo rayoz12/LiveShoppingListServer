@@ -7,14 +7,16 @@ else {
 }
 
 let key = "";
-let defaultHeader = {
+let defaultHeaders = {
     "Authorization": key,
+    "x-user": undefined,
     "Content-Type": "application/json"
 }
 
-export function setConfig(newKey) {
+export function setConfig(newKey, name) {
     key = newKey;
-    defaultHeader.Authorization = key;
+    defaultHeaders.Authorization = key;
+    defaultHeaders["x-user"] = name;
     localStorage.setItem("listKey", newKey);
 }
 
@@ -26,17 +28,23 @@ export function getKey() {
 const keyStorage = localStorage.getItem("listKey");
 if (keyStorage !== null) {
     key = keyStorage;
-    defaultHeader.Authorization = keyStorage;
+    defaultHeaders.Authorization = keyStorage;
+}
+
+const nameStorage = localStorage.getItem("listName");
+if (nameStorage !== null) {
+    defaultHeaders["x-user"] = nameStorage;
 }
 
 export class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "None") {
+    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", isPrivate = false) {
         this.item = item;
         this.quantity = quantity
         this.bought = bought;
         this.added_by = added_by;
         this.comments = comments;
         this.group = group;
+        this.isPrivate = isPrivate;
     }
 }
 
@@ -46,7 +54,7 @@ export function delay(ms) {
 }
 
 export async function getItems() {
-    const res = await fetch(api + "/", {headers: defaultHeader});
+    const res = await fetch(api + "/", {headers: defaultHeaders});
 
     if (res.status === 403) {
         throw new Error("API Key is incorrect");
@@ -65,15 +73,15 @@ export async function getItems() {
 }
 
 export async function setBought(item) {
-    const res = await fetch(`${api}/bought`, {headers: defaultHeader, method: "POST", body: JSON.stringify(item)});
+    const res = await fetch(`${api}/bought`, {headers: defaultHeaders, method: "POST", body: JSON.stringify(item)});
 }
 
 export async function deleteItem(item) {
-    const res = await fetch(`${api}/${item.id}`, {headers: defaultHeader, method: "DELETE", body: JSON.stringify(item)});
+    const res = await fetch(`${api}/${item.id}`, {headers: defaultHeaders, method: "DELETE", body: JSON.stringify(item)});
 }
 
 export async function addItem(item) {
-    const res = await fetch(`${api}/add`, {headers: defaultHeader, method: "POST", body: JSON.stringify(item)});
+    const res = await fetch(`${api}/add`, {headers: defaultHeaders, method: "POST", body: JSON.stringify(item)});
     const json = await res.json();
     return json.item;
 } 

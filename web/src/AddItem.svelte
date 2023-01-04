@@ -10,6 +10,7 @@
     let name;
     let selectedGroup;
     let comments;
+    let isPrivate = false;
 
     $: {
         // Lets make sure the groups are in component groups and add them if they don't exist
@@ -33,7 +34,7 @@
             return;
         }
 
-        const item = new Item(name, qty, false, userName, comments, selectedGroup);
+        const item = new Item(name, qty, false, userName, comments, selectedGroup, isPrivate);
         dispatch('add', item);
         name = "";
         qty = 1;
@@ -77,6 +78,12 @@
                     {/each}
                     <option>New</option>
                 </select>
+            </label>
+        </div>
+        <div class="flex flex-row justify-between">
+            <label>
+                Private
+                <input type="checkbox" class="cursor-pointer p-[60px]" bind:checked={isPrivate}/>
             </label>
         </div>
         <div class="w-full">
