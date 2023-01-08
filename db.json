@@ -6,7 +6,7 @@
       "comments": "We need milk for tea and breakfast",
       "item": "Milk",
       "quantity": 5,
-      "isPrivate": false,
+      "is_private": false,
       "id": "1533468332811"
     },
     {
@@ -15,7 +15,7 @@
       "comments": "We need milk for tea and breakfast",
       "item": "tea bags",
       "quantity": 5,
-      "isPrivate": false,
+      "is_private": false,
       "id": "1653913447437"
     },
     {
@@ -25,7 +25,7 @@
       "added_by": "Ryan",
       "comments": "",
       "group": "Cars",
-      "isPrivate": true,
+      "is_private": true,
       "id": "1672823609365"
     },
     {
@@ -35,7 +35,7 @@
       "added_by": "Ryan",
       "comments": "",
       "group": "Cars",
-      "isPrivate": true,
+      "is_private": true,
       "id": "1672823626791"
     }
   ]
