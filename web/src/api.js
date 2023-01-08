@@ -37,14 +37,14 @@ if (nameStorage !== null) {
 }
 
 export class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", isPrivate = false) {
+    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", is_private = false) {
         this.item = item;
         this.quantity = quantity
         this.bought = bought;
         this.added_by = added_by;
         this.comments = comments;
         this.group = group;
-        this.isPrivate = isPrivate;
+        this.is_private = is_private;
     }
 }
 

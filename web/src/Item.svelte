@@ -29,7 +29,7 @@
             <div class="flex flex-row justify-between w-full cursor-pointer hover:bg-slate-600" on:click={toggleBought}>
                 <div class="flex flex-col items-start w-full pl-[20px] py-1">
                     <p class="text-xl transition-all duration-200" class:line-through={item.bought} class:text-slate-500={item.bought}>{item.quantity > 1 ? item.quantity : ""} {item.item}</p>
-                    <p class="text-sm italic transition-all duration-200 text-slate-400" class:line-through={item.bought}>{item.isPrivate ? "Private" : ""}</p>
+                    <p class="text-sm italic transition-all duration-200 text-slate-400" class:line-through={item.bought}>{item.is_private ? "Private" : ""}</p>
                     <p class="text-base transition-all duration-200" class:line-through={item.bought} class:text-slate-500={item.bought}>{item.comments}</p>
                 </div>
                 <div class="flex flex-col justify-center pr-[20px]">

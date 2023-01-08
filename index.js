@@ -42,14 +42,14 @@ console.log("API Key:", APIKey);
 
 
 class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", isPrivate = false) {
+    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", is_private = false) {
         this.item = item;
         this.quantity = quantity
         this.bought = bought;
         this.added_by = added_by;
         this.comments = comments;
         this.group = group;
-        this.isPrivate = isPrivate;
+        this.is_private = is_private;
     }
 }
 
@@ -97,11 +97,11 @@ async function init() {
         console.log(req.headers);
         if (user) {
             // get the user's private items
-            items = items.filter(it => !it.isPrivate || it.added_by === user);
+            items = items.filter(it => !it.is_private || it.added_by === user);
         }
         else {
-            // get the public (!isPrivate) items
-            items = items.filter(it => !it.isPrivate);
+            // get the public (!is_private) items
+            items = items.filter(it => !it.is_private);
         }
 
         res.json(items);
@@ -114,7 +114,7 @@ async function init() {
         .value();
 
         const user = req.headers["x-user"];
-        if (item.isPrivate) {
+        if (item.is_private) {
             if (user === item.added_by) {
                 return res.json(item);
             }
@@ -192,7 +192,7 @@ async function init() {
         .write();
         console.log("Deleting Item:");
         console.log(item);
-        res.send({success: 1, item});
+        res.send({success: 1, item: item[0]});
     });
 
     app.use(cors());
