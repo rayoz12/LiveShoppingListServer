@@ -3,6 +3,9 @@
     const dispatch = createEventDispatcher();
     import { Item } from "./api";
 
+    const itemNames = ["Bread", "Tea", "Kia Stinger", "Milk", "Grand Theft Auto 6", "Speakers", "RAM", "SSD", "Name", "Monitor", "The Twilight Saga", "Pants", "Lives", "TV Shows", "Ryan", "Manjusha", "Music", "Vampire Books", "Plushies", "Roses", "Maid Costumes"]
+    const namePlaceholder = itemNames[Math.floor(Math.random()*itemNames.length)]; 
+
     export let groups;
     export let userName;
     let componentGroups = [];
@@ -61,24 +64,27 @@
 <main>
     <p class="text-left text-lg pl-1">Add an Item</p>
     <div class="flex flex-col space-y-4 shadow-xl bg-slate-700 p-4 rounded">
-        <div class="flex flex-row justify-between">
+        <div class="flex flex-row justify-between items-center">
+            <!-- <label class="flex-grow pr-2" for="name">
+                Name
+            </label> -->
+            <input bind:value={name} name="name" placeholder={namePlaceholder} class="w-full bg-slate-800 rounded h-8 pl-2" />
+        </div>
+        <div class="flex flex-row justify-between items-center">
             <label>
                 Qty
                 <input bind:value={qty} type="number" placeholder="Qty" class="bg-slate-800 rounded w-16 h-8 px-2" min="1" />
             </label>
-            <label class="flex-grow px-2">
-                <input bind:value={name} placeholder="Name" class="w-full bg-slate-800 rounded h-8 pl-2" />
-            </label>
-            <label>
-                <!-- {@debug componentGroups} -->
+            <label for="group" class="px-2">
                 Group
-                <select bind:value={selectedGroup} on:change={selectChange} class="w-48 bg-slate-800 rounded h-8 pl-2">
-                    {#each componentGroups as group}
-                        <option>{group}</option>
-                    {/each}
-                    <option>New</option>
-                </select>
             </label>
+            <select bind:value={selectedGroup} name="group" on:change={selectChange} class="flex-grow bg-slate-800 rounded h-8 pl-2">
+                {#each componentGroups as group}
+                    <option>{group}</option>
+                {/each}
+                <option>New</option>
+            </select>
+            
         </div>
         <div class="flex flex-row justify-between">
             <label>

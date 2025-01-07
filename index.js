@@ -1,17 +1,24 @@
-const fs = require("fs");
+import { readFileSync } from "fs";
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+
+import { JSONDatabase } from "./db.js";
+import { ItemDB, ItemNotFoundError, itemSchema } from "./itemDB.js";
+import responseTime from "response-time";
+
+
 const app = express();
-
+app.use(cors());
+if (process.env["NODE_ENV"] !== "production") {
+    app.use(responseTime((req, res, time) => {
+        console.log(req.url, time);
+    }))
+}
 app.use(bodyParser.json());
 
-const low = require("lowdb");
-const FileAsync = require('lowdb/adapters/FileAsync');
 
-const adapter = new FileAsync('db.json');
-let db;
 
 let APIKey, APP_PORT;
 
@@ -21,7 +28,7 @@ if (process.env.API_KEY) {
 }
 else {
     console.log("using api key from file");
-    APIKey = fs.readFileSync("api_key.txt", "utf8");
+    APIKey = readFileSync("api_key.txt", "utf8");
 }
 
 if (process.env.PORT) {
@@ -33,46 +40,29 @@ else if (process.env.APP_PORT) {
     APP_PORT = process.env.APP_PORT;
 }
 else {
-    console.log("using port key from file");
+    console.log("using default port 80");
     APP_PORT = 80
 }
 
 
 console.log("API Key:", APIKey);
 
-
-class Item {
-    constructor(item = "", quantity = 1, bought = false, added_by = "unknown", comments = "", group = "none", is_private = false) {
-        this.item = item;
-        this.quantity = quantity
-        this.bought = bought;
-        this.added_by = added_by;
-        this.comments = comments;
-        this.group = group;
-        this.is_private = is_private;
-    }
-}
-
 async function init() {
-    db = await low(adapter);
-    //db.read();
-
-    // Set some defaults
-    db.defaults({ items: [] }).write();
-
-    console.log(db.get('items').value());
+    const jsonDB = new JSONDatabase("./db.json");
+    await jsonDB.init();
+    const itemDB = new ItemDB(jsonDB);
 
     const shoppingList = express.Router();
 	
 	shoppingList.get('/GetApp', (req, res) => {
-		res.sendFile('./LiveShoppingList.apk', {root: __dirname});
+		res.sendFile('./LiveShoppingList.apk', {root: process.cwd()});
 	});
 
     shoppingList.get('/web', (req, res) => {
         if (!req.path.endsWith("/")) {
             return res.redirect("/web/");
         }
-		res.sendFile('./public/index.html', {root: __dirname});
+		res.sendFile('./public/index.html', {root: process.cwd()});
 	});
 
     shoppingList.use("/web", express.static('public'));
@@ -90,28 +80,16 @@ async function init() {
 	});
 
     shoppingList.get('/', (req, res) => {
-        //res.json(dn)
-        let items = db.get('items').value();
-
         const user = req.headers["x-user"];
         console.log(req.headers);
-        if (user) {
-            // get the user's private items
-            items = items.filter(it => !it.is_private || it.added_by === user);
-        }
-        else {
-            // get the public (!is_private) items
-            items = items.filter(it => !it.is_private);
-        }
+        const items = itemDB.getItemsForUser(user);
 
         res.json(items);
     });
 
     // GET /items/:id
     shoppingList.get('/:id', (req, res) => {
-        const item = db.get('items')
-        .find({ id: req.params.id })
-        .value();
+        const item = itemDB.getItemByID(req.params.id);
 
         const user = req.headers["x-user"];
         if (item.is_private) {
@@ -127,7 +105,6 @@ async function init() {
     });
 
     shoppingList.post('/add', async (req, res) => {
-        const itemSchema = JSON.parse(JSON.stringify(new Item()));
         for (let key in itemSchema) {
             if (!req.body.hasOwnProperty(key)) {
                 res.status(400).json({success: 0, err: "missing required field: " + key});
@@ -135,11 +112,7 @@ async function init() {
             }
         }
 
-        const item = await db.get('items')
-        .push(req.body)                         //pushes it
-        .last()                                 //gets the last element of array
-        .assign({ id: Date.now().toString() })  //add an id field
-        .write();                               //save it
+        const item = await itemDB.addItem(req.body);
         console.log(item);
         res.send({success: 1, item});
     });
@@ -150,17 +123,15 @@ async function init() {
             res.status(400).json({success: 0, err: "missing required field: id"});
             return;
         }
-        const item = await db.get("items")
-        .find({id: req.body.id})
-        .assign({bought: req.body.bought})
-        .write();
+
+        const item = await itemDB.bought(req.body.id, req.body.bought);
         console.log(item);
         res.send({success: 1, item});
     });
 
     //updates an item to the bool specified in the bought property
     shoppingList.post('/update', async (req, res) => {
-        const itemSchema = JSON.parse(JSON.stringify(new Item()));
+        const itemSchema = JSON.parse(JSON.stringify(itemSchema));
         itemSchema.id = 0;
         for (let key in itemSchema) {
             if (!req.body.hasOwnProperty(key)) {
@@ -168,11 +139,8 @@ async function init() {
                 return;
             }
         }
-        db.get('items')
-        .find({id: req.body.id})
-        .assign(req.body)
-        .value();
-        const item = await db.write();
+        const item = await itemDB.updateItem(req.body);
+
         console.log(item);
         res.send({success: 1, item});
     });
@@ -180,22 +148,26 @@ async function init() {
     //updates an item to the bool specified in the bought property
     shoppingList.delete('/:id', async (req, res) => {
         console.log(req.params.id);
-        const id = req.params.id;
-        const itemSearch = db.get("items").find({id});
-        if (itemSearch.size() < 1) {
-            res.status(400).json({success: 0, err: "ID not found"});
+        try {
+            const item = itemDB.getItemByID(req.params.id);
+            console.log("Deleting Item:");
+            console.log(item);
+            await itemDB.deleteById(req.params.id);
+            
+            res.send({success: 1, item});
             return;
         }
-
-        const item = await db.get("items")
-        .remove({id: req.params.id})
-        .write();
-        console.log("Deleting Item:");
-        console.log(item);
-        res.send({success: 1, item: item[0]});
+        catch (e) {
+            if (e instanceof ItemNotFoundError) {
+                res.status(400).json({success: 0, err: "ID not found"});
+                return;
+            }
+            console.error(e);
+            throw e;
+        }
     });
 
-    app.use(cors());
+
     app.use('/shoppingList', shoppingList);
     app.use(shoppingList);
 

@@ -3,7 +3,7 @@ if (isProduction) {
     api = ""
 }
 else {
-    api = "http://localhost:80"
+    api = "http://localhost:3000"
 }
 
 let key = "";
